@@ -1,48 +1,40 @@
-import unittest
-
-from bbox import Bbox, Bboxes
+from bbox import Bbox
 
 
-class TestBboxes(unittest.TestCase):
-    def test_get_resized(self):
-        bboxes = Bboxes([
-            Bbox(1, (10, 20, 15, 30), 0, 'smth'),
-            Bbox(2, (10, 20, 20, 30), 0, 'smth')
-        ])
-        bboxes.mode = 2
-        bboxes = bboxes.get_resized(0.5, 0.5)
-        self.assertEqual(bboxes.coords, [(5, 10, 3, 5), (5, 10, 5, 5)])
-
-
-class TestBbox(unittest.TestCase):
-    def test_init(self):
-        bbox = Bbox(1, (10, 20, 15, 30), 0, 'smth')
-        self.assertEqual(bbox._area, 50)
-        with self.assertRaises(AssertionError):
-            Bbox(1, (10, 20, 15, 30, 20), 0, 'smth')
-
+class TestBbox:
     def test_get_resized(self):
         # In mode 1
-        bbox = Bbox(1, (10, 20, 15, 30), 0, 'smth')
+        bbox = Bbox(1, [10, 20, 15, 30], 'smth', mode=1)
         bbox = bbox.get_resized(0.5, 0.5)
-        self.assertEqual(bbox._coord, (5, 10, 8, 15))
-        self.assertEqual(bbox._area, 15)
+        assert bbox._coord == [5, 10, 8, 15]
+        assert bbox._area == 15
         # In mode 2
-        bbox = Bbox(1, (10, 20, 5, 10), 0, 'smth')
-        bbox._mode = 2
+        bbox = Bbox(1, [10, 20, 5, 10], 'smth', mode=2)
         bbox = bbox.get_resized(0.5, 0.5)
-        self.assertEqual(bbox._coord, (5, 10, 3, 5))
-        self.assertEqual(bbox._area, 15)
+        assert bbox._coord == [5, 10, 3, 5]
+        assert bbox._area == 15
 
-    def test_change_to_mode(self):
-        bbox = Bbox(1, (10, 20, 15, 30), 0, 'smth')
+    def test_normalize_coord(self):
+        # In mode 1
+        bbox = Bbox(1, [10, 20, 15, 30], 'smth', mode=1)
+        bbox.normalize_coord(img_size=(100, 200))
+        assert bbox.is_coord_normalized
+        assert bbox._coord == [0.05, 0.2, 0.075, 0.3]
+        # Check redo
+        bbox.normalize_coord(img_size=(100, 200))
+        assert bbox.is_coord_normalized
+        assert bbox._coord == [0.05, 0.2, 0.075, 0.3]
+        # In mode 2
+        bbox = Bbox(1, [10, 20, 5, 10], 'smth', mode=2)
+        bbox.normalize_coord(img_size=(100, 200))
+        assert bbox._coord == [0.05, 0.2, 0.05, 0.05]
+
+    def test_set_mode(self):
+        bbox = Bbox(1, [10, 20, 15, 30], 'smth', mode=1)
         bbox.mode = 2
-        self.assertEqual(bbox._coord, (10, 20, 5, 10))
-        self.assertEqual(bbox._mode, 2)
+        assert bbox._coord == [10, 20, 5, 10]
+        assert bbox._mode == 2
         bbox.mode = 1
-        self.assertEqual(bbox._coord, (10, 20, 15, 30))
-        self.assertEqual(bbox._mode, 1)
+        assert bbox._coord == [10, 20, 15, 30]
+        assert bbox._mode == 1
 
-
-if __name__ == '__main__':
-    unittest.main()

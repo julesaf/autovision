@@ -37,7 +37,7 @@ class FastRCNNModel:
     def train(self, n_epochs=1, batch_size=32, size=None) -> None:
         n_steps_per_epoch = int(len(self.dataset) / batch_size)
         n_training_steps = int(n_epochs * len(self.dataset) / batch_size)
-        self.model.configure_optimizers(n_training_steps)
+        self.configure_optimizers(n_training_steps)
         assert(n_epochs >= 1)
         assert (n_steps_per_epoch >= 1)
         for epoch in range(n_epochs):
@@ -50,7 +50,7 @@ class FastRCNNModel:
             print(f'\t--> lr: {lr_state[0]:.6f} - loss: {np.mean(loss_epoch):.3f}')
 
     def train_step(self, batch: Batch):
-        self._prepocess_data(batch)
+        self._preprocess_data(batch)
         X = torch.Tensor(batch.pixel_values).type(torch.float).to(self.device)
         y = [{
             'boxes': torch.Tensor(batch.bboxes[i]).type(torch.int64).to(self.device),
@@ -77,7 +77,7 @@ class FastRCNNModel:
         predictions = []
         for sample in tqdm.auto.tqdm(samples):
             batch = BatchWrapper(samples=[sample]).get(size=size, mode=1, normalize_imgs=True)
-            self._prepocess_data(batch)
+            self._preprocess_data(batch)
             X = torch.Tensor(batch.pixel_values).type(torch.float).to(self.device)
             self._check_input_data(X)
             self.model.eval()
@@ -87,7 +87,7 @@ class FastRCNNModel:
         return predictions
 
     @staticmethod
-    def _prepocess_data(batch: Batch) -> None:
+    def _preprocess_data(batch: Batch) -> None:
         batch.normalize_imgs()
 
     @staticmethod

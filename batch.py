@@ -40,13 +40,13 @@ class BatchWrapper:
         self._batch = Batch()
         for sample in self.samples:
             sample = sample.get(size, mode)
-            if sample.bboxes is not None:
+            if len(sample.bboxes) > 0:
                 self._batch.append(
                     sample.get_img(),
-                    sample.bboxes.coords,
-                    sample.bboxes.areas,
-                    sample.bboxes.labels,
-                    list(map(self.label_to_cat, sample.bboxes.labels))
+                    [bbox.coord for bbox in sample.bboxes],
+                    [bbox.area for bbox in sample.bboxes],
+                    [bbox.label for bbox in sample.bboxes],
+                    [self.label_to_cat(bbox.label) for bbox in sample.bboxes]
                 )
             else:
                 self._batch.append(sample.get_img())

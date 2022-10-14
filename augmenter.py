@@ -29,11 +29,11 @@ class Augmenter:
         for i in tqdm.auto.trange(n_augmented):
             random_idx = random.randrange(len(self.samples))
             random_sample = copy.deepcopy(self.samples[random_idx])
-            random_sample.bboxes.mode = 1
+            random_sample.mode = 1
             augmented_sample = self.pipeline(
                 image=random_sample.get_img(img_format='channel_last'),
-                bboxes=random_sample.bboxes.coords,
-                class_labels=random_sample.bboxes.labels
+                bboxes=[bbox.coord for bbox in random_sample.bboxes],
+                class_labels=[bbox.label for bbox in random_sample.bboxes]
             )
             augmented_sample = Sample(
                 _id=str(i),
