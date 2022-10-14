@@ -5,9 +5,9 @@ import cv2
 import os
 import numpy as np
 import copy
+import utils
 from typing import Union, Literal
 from .bbox import Bbox
-from .utils import visualize_bboxes, show_img
 
 
 class Sample:
@@ -37,7 +37,7 @@ class Sample:
         if self.bboxes is not None:
             img = self.get_img()
             self.mode = 1
-            visualize_bboxes(
+            utils.image.visualize_bboxes(
                 img,
                 [bbox.coord for bbox in self.bboxes],
                 [bbox.label for bbox in self.bboxes],
@@ -45,7 +45,7 @@ class Sample:
             )
         else:
             img = self.get_img(img_format='channel_last')
-            show_img(img, figsize=figsize)
+            utils.image.show_img(img, figsize=figsize)
 
     def get_img(self, size: tuple[int, int] = None,
                 img_format: Literal['channel_first', 'channel_last'] = 'channel_first') -> np.array:
