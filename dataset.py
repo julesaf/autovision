@@ -10,6 +10,7 @@ from .bbox import Bbox
 
 class Dataset:
     def __init__(self, samples: list[Sample] = None) -> None:
+        # TODO : utiliser torch.Dataset ou autre ?
         self.samples = []
         self.labeling_data_dirpath = None
         self.imgs_dirpath = None
@@ -24,6 +25,7 @@ class Dataset:
             self.infos_data = None
 
     def from_dirs(self, labeling_data_dirpath: str, imgs_dirpath: str, mode: int = 1) -> None:
+        # TODO : à migrer vers utils
         self.labeling_data_dirpath = labeling_data_dirpath
         self.imgs_dirpath = imgs_dirpath
         self._load_labeling_data()
@@ -81,5 +83,3 @@ class Dataset:
 
     def __len__(self) -> int:
         return len(self.samples)
-
-# grayscale, rgb, bgr, ...

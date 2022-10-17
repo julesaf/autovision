@@ -5,6 +5,7 @@ from torchvision.transforms.functional import to_pil_image
 
 
 def visualize_bboxes(img, boxes, labels, figsize=(12, 10)):
+    # TODO : ajouter unit test
     box = draw_bounding_boxes(
         torch.Tensor(img).type(torch.uint8),
         boxes=torch.Tensor(boxes),
@@ -19,6 +20,7 @@ def visualize_bboxes(img, boxes, labels, figsize=(12, 10)):
 
 
 def show_img(img, figsize=(12, 10)):
+    # TODO : ajouter unit test ?
     plt.figure(figsize=figsize)
     plt.imshow(img)
     plt.show()

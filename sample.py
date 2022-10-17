@@ -9,7 +9,6 @@ import utils
 from typing import Union, Literal
 from .bbox import Bbox
 
-
 class Sample:
     def __init__(self, _id, img: Union[str, np.ndarray],
                  bboxes: list[Bbox] = None, img_size: tuple[int, int] = None,

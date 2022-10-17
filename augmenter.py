@@ -25,6 +25,7 @@ class Augmenter:
             ))
 
     def run(self, n_augmented: int) -> list[Sample]:
+        # TODO : refactorer et penser à l'évolution de l'objet
         augmented_samples = []
         for i in tqdm.auto.trange(n_augmented):
             random_idx = random.randrange(len(self.samples))

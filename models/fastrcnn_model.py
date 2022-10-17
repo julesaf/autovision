@@ -4,9 +4,9 @@ import numpy as np
 import transformers
 import torchvision
 import tqdm
-from .batch import BatchWrapper, Batch
-from .sample import Sample
-from .dataset import Dataset
+from batch import BatchWrapper, Batch
+from sample import Sample
+from dataset import Dataset
 
 
 class FastRCNNModel:
