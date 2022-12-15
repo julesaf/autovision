@@ -17,11 +17,11 @@ class BatchWrapper:
     def append(self, sample) -> None:
         self.samples.append(sample)
 
-    def get(self, size: tuple[int, int] = None, mode: int = 1,
+    def get(self, size: tuple[int, int] = None, box_format: int = 1,
             normalize_imgs: bool = False, normalize_bboxes: bool = False) -> Batch:
         if size is None:
             size = self._get_mean_size()
-        self._transform_in_batch(size, mode)
+        self._transform_in_batch(size, box_format=box_format)
         if normalize_imgs:
             if self._batch is not None:
                 self._batch.normalize_imgs()
@@ -33,23 +33,23 @@ class BatchWrapper:
     def _get_mean_size(self) -> tuple[int, int]:
         mean = lambda e: np.round(np.mean(e), decimals=0).astype(int)
         img_height_mean = mean([sample.img_size[0] for sample in self.samples])
-        img_width_mean = mean([sample.img_size[0] for sample in self.samples])
+        img_width_mean = mean([sample.img_size[1] for sample in self.samples])
         return img_height_mean, img_width_mean
 
-    def _transform_in_batch(self, size: tuple[int, int], mode: int = 1) -> None:
+    def _transform_in_batch(self, size: tuple[int, int], box_format: int = 1) -> None:
         self._batch = Batch()
         for sample in self.samples:
-            sample = sample.get(size, mode)
-            if len(sample.bboxes) > 0:
+            sample = sample.get(size=size, box_format=box_format)
+            if len(sample.annotations) > 0:
                 self._batch.append(
-                    sample.get_img(),
-                    [bbox.coord for bbox in sample.bboxes],
-                    [bbox.area for bbox in sample.bboxes],
-                    [bbox.label for bbox in sample.bboxes],
-                    [self.label_to_cat(bbox.label) for bbox in sample.bboxes]
+                    sample.get_img(size=size, img_format='channel_first'),
+                    [bbox.coord for bbox in sample.annotations],
+                    [bbox.area for bbox in sample.annotations],
+                    [bbox.label for bbox in sample.annotations],
+                    [self.label_to_cat(bbox.label) for bbox in sample.annotations]
                 )
             else:
-                self._batch.append(sample.get_img())
+                self._batch.append(sample.get_img(size=size, img_format='channel_first'))
         self._batch.to_numpy()
 
     def __len__(self) -> int:

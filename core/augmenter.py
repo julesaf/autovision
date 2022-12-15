@@ -3,8 +3,8 @@ import albumentations as A
 import random
 import copy
 import tqdm
-from .sample import Sample
-from .bbox import Bbox
+from core.sample.objectdetection_sample import ObjectDetectionSample
+from core.annotations.bbox import Bbox
 
 
 class Augmenter:
@@ -24,22 +24,22 @@ class Augmenter:
                 label_fields=['class_labels']
             ))
 
-    def run(self, n_augmented: int) -> list[Sample]:
+    def run(self, n_augmented: int) -> list[ObjectDetectionSample]:
         # TODO : refactorer et penser à l'évolution de l'objet
         augmented_samples = []
         for i in tqdm.auto.trange(n_augmented):
             random_idx = random.randrange(len(self.samples))
             random_sample = copy.deepcopy(self.samples[random_idx])
-            random_sample.mode = 1
+            random_sample.box_format = 1
             augmented_sample = self.pipeline(
                 image=random_sample.get_img(img_format='channel_last'),
-                bboxes=[bbox.coord for bbox in random_sample.bboxes],
-                class_labels=[bbox.label for bbox in random_sample.bboxes]
+                bboxes=[bbox.coord for bbox in random_sample.annotations],
+                class_labels=[bbox.label for bbox in random_sample.annotations]
             )
-            augmented_sample = Sample(
+            augmented_sample = ObjectDetectionSample(
                 _id=str(i),
                 img=augmented_sample['image'],
-                bboxes=[
+                annotations=[
                     Bbox(_id=str(i), coord=coord, label=augmented_sample['class_labels'][i])
                     for i, coord in enumerate(augmented_sample['bboxes'])
                 ]

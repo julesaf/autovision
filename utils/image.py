@@ -19,6 +19,16 @@ def visualize_bboxes(img, boxes, labels, figsize=(12, 10)):
     plt.show()
 
 
+def visualize_masks(img, heatmaps, labels, figsize=(12, 10)):
+    # TODO : ajouter unit test
+    for heatmap in heatmaps:
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.imshow(img)
+        ax.imshow(heatmap, cmap='gray', alpha=0.8)
+        ax.set_title(labels)
+        fig.show()
+
+
 def show_img(img, figsize=(12, 10)):
     # TODO : ajouter unit test ?
     plt.figure(figsize=figsize)
